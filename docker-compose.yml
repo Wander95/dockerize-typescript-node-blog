@@ -7,12 +7,13 @@ services:
     build: ./
     ports:
       - '3000:3000'
+      - '9229:9229'
     links:
       - mongo_container
     volumes:
       - ./:/usr/src/app
   mongo_container:
-    container_name: mongodb
+    container_name: mongodb-blog
     image: mongo
     ports:
       - '27017:27017'
