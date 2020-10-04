@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  node_container:
+    container_name: blogspost
+    restart: always
+    build: ./
+    ports:
+      - '3000:3000'
+    links:
+      - mongo_container
+    volumes:
+      - ./:/usr/src/app
+  mongo_container:
+    container_name: mongodb
+    image: mongo
+    ports:
+      - '27017:27017'
+    volumes:
+      - E:/Programing/DockerDatabase/MongoDb:/data/db
