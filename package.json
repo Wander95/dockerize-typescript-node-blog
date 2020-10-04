@@ -5,12 +5,12 @@
   "main": "index.js",
   "scripts": {
     "start": "node dist/index.js",
+    "startdev": "nodemon src/index.ts",
+    "dev:debug": "nodemon --inspect=9229 src/index.ts",
+    "watch:debug": "nodemon --inspect=5858 -e ts,tsx --exec node -r ts-node/register ./src/index.ts",
     "dev": "concurrently \"tsc --watch\" \"nodemon dist/index.js\" ",
     "test": "jest",
-    "tslint": "tslint --project tsconfig.json",
-    "prettier:base": "prettier --parser typescript --single-quote",
-    "prettier:check": "npm run prettier:base -- --list-different \"src/**/*.{ts,tsx}\"",
-    "prettier:write": "npm run prettier:base -- --write \"src/**/*.{ts,tsx}\""
+    "tslint": "tslint --project tsconfig.json"
   },
   "keywords": [],
   "author": "",
@@ -43,6 +43,7 @@
     "pretty-quick": "^3.0.2",
     "supertest": "^5.0.0",
     "ts-jest": "^26.4.1",
+    "ts-node": "^9.0.0",
     "tslint": "^6.1.3",
     "tslint-config-prettier": "^1.18.0",
     "typescript": "^4.0.3"
