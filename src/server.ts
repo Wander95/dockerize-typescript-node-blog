@@ -1,4 +1,4 @@
-import express, { Application } from 'express';
+import express, { Application, Router } from 'express';
 import morgan from 'morgan';
 import helmet from 'helmet';
 
@@ -12,7 +12,5 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan(`dev`));
 app.use(helmet());
-
-// *waht */
 
 export default app;
