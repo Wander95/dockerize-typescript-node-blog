@@ -1,11 +1,13 @@
 import { Request, Response } from 'express';
 import UserModel from '../models/User.Model';
 import SocialMediaModelUserRel from '../models/Relations/SocialMedia-User.relation';
-
+import SocialMediaListModel from '../models/Relations/SocialMediaList.Model';
 interface ISocialMedia {
   link: string;
   socialMedia: string;
 }
+
+interface ISocialMediaList {}
 
 interface IUserRequestBody {
   name: string;
@@ -26,6 +28,7 @@ export const createUser = async (
     email,
     socialMedias,
   }: IUserRequestBody = req.body;
+
   const newUser = new UserModel({
     name,
     lastName,
@@ -34,34 +37,37 @@ export const createUser = async (
   });
 
   try {
-    const user = await newUser.save();
-    let testingRel;
+    let user;
+    let socialMediaList;
+    const socialMediaIds: any = [];
+
     try {
-      testingRel = Promise.all(
+      socialMediaList = Promise.all(
         socialMedias.map(async (social: ISocialMedia) => {
-          const relationship = new SocialMediaModelUserRel({
+          const socialMediaLink = new SocialMediaListModel({
             link: social.link,
             socialMediaId: social.socialMedia,
-            userId: user._id,
+            userId: newUser._id,
           });
 
           try {
-            await relationship.save();
+            socialMediaIds.push(socialMediaLink._id);
+            await socialMediaLink.save();
           } catch (error) {
             console.log('relationship error', error);
           }
         })
       );
     } catch (error) {
-      console.log('error', error);
       return res.status(400).json({
         error,
       });
     }
-
+    user = await newUser.save();
+    await user.update({ socialMedia: socialMediaIds });
     return res.status(200).json({
       user,
-      testingRel,
+      testingRel: socialMediaList,
     });
   } catch (error) {
     return res.status(400).json({
@@ -89,13 +95,13 @@ export const getUsers = async (
   }
 };
 
-export const getOneUsers = async (
+export const getOneUser = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
   try {
     const user = await UserModel.findOne({ _id: req.params.id }).populate(
-      'socialmedia_userrelations'
+      'socialMedia'
     );
 
     return res.status(200).json({
