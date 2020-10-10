@@ -1,7 +1,7 @@
 import {
   createUser,
   getUsers,
-  getOneUsers,
+  getOneUser,
 } from '../controllers/User.Controller';
 import { Router } from 'express';
 
@@ -11,6 +11,6 @@ UserRouter.get('/user', getUsers);
 
 UserRouter.post('/user', createUser);
 // UserRouter.post('/:{id}', () => {});
-UserRouter.get('/user/:id', getOneUsers);
+UserRouter.get('/user/:id', getOneUser);
 
 export default UserRouter;
