@@ -1,12 +1,14 @@
 import { model, Schema, Document } from 'mongoose';
+import uniqueValidator from 'mongoose-unique-validator';
 
 export interface IUser extends Document {
   name: string;
   lastName: string;
+  email: string;
   bio: string;
   createdDate: Date;
-  blogs: Schema.Types.ObjectId[];
-  socialMedia: Schema.Types.ObjectId[];
+  articles: string[];
+  socialMedia: string[];
 }
 
 const UserSchema: Schema = new Schema({
@@ -18,23 +20,31 @@ const UserSchema: Schema = new Schema({
     type: String,
     required: true,
   },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    lowercase: true,
+  },
   bio: String,
   createdDate: {
     type: Date,
     default: Date.now(),
   },
-  blogs: [
+  posts: [
     {
       type: Schema.Types.ObjectId,
-      ref: 'Blog',
+      ref: 'Article',
     },
   ],
   socialMedia: [
     {
       type: Schema.Types.ObjectId,
-      ref: 'SocialMedia',
+      ref: 'SocialMediaList',
     },
   ],
 });
+
+UserSchema.plugin(uniqueValidator);
 
 export default model('User', UserSchema);
