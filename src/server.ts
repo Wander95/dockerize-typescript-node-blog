@@ -8,6 +8,7 @@ import serviceAccount from './serviceAccountKey.json';
 
 import UserRoutes from './routes/Users.Route';
 import SocialMediaRoutes from './routes/SocialMedia.Route';
+import ArticleRoutes from './routes/Article.Route';
 
 // * Making Ts happy again */
 const params = {
@@ -44,5 +45,6 @@ app.use(cors());
 // * Routes */
 app.use('/api', UserRoutes);
 app.use('/api', SocialMediaRoutes);
+app.use('/api', ArticleRoutes);
 
 export default app;
