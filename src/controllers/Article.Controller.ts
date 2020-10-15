@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
-import UserModel from '../models/User.Model';
 import ArticleModel from '../models/Article.Model';
+import UserModel, { IUser } from '../models/User.Model';
+
 interface IBlogRequestBody {
   title: string;
   comments: string;
@@ -10,6 +11,7 @@ interface IBlogRequestBody {
   userId: string;
 }
 
+// ** POST ONE ARTICLE */
 export const createArticle = async (
   req: Request,
   res: Response
@@ -31,6 +33,12 @@ export const createArticle = async (
   });
 
   try {
+    try {
+      await UserModel.update({ _id: userId }, { $push: { posts: newArticle } });
+    } catch (error) {
+      console.log('error', error);
+    }
+
     const article = await newArticle.save();
     return res.status(200).json(article);
   } catch (error) {
@@ -41,12 +49,14 @@ export const createArticle = async (
   }
 };
 
+// * GET ALL ARTICLES */
 export const getArticles = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
   try {
-    const articles = await ArticleModel.find();
+    const query = req.query;
+    const articles = await ArticleModel.find(query).populate('author');
 
     return res.status(200).json({
       articles,
@@ -58,14 +68,70 @@ export const getArticles = async (
   }
 };
 
+// * GET ONE ARTICLE * /
 export const getOneArticle = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
   try {
     const article = await ArticleModel.findOne({ _id: req.params.id }).populate(
-      'author'
+      {
+        path: 'author',
+      }
     );
+
+    return res.status(200).json({
+      article,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      error,
+    });
+  }
+};
+
+// * UPDATE ONE ARTICLE * /
+export const updateArticle = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { title, categories, content } = req.body;
+
+  try {
+    const oldArticle = await ArticleModel.findOneAndUpdate(
+      { _id: req.params.articleId },
+      {
+        title,
+        categories,
+        content,
+      }
+    );
+
+    const newArticle = await ArticleModel.findById(req.params.articleId);
+
+    return res.status(200).json({
+      oldArticle,
+      newArticle,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      error,
+    });
+  }
+};
+
+// * DELETE ONE ARTICLE * /
+export const deleteArticle = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  try {
+    const article = await ArticleModel.findOneAndDelete({
+      _id: req.params.articleId,
+    });
+    if (!article) {
+      return res.status(400).json({ message: 'Item does not exist' });
+    }
 
     return res.status(200).json({
       article,
