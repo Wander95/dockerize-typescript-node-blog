@@ -10,41 +10,67 @@ export interface IUser extends Document {
   articles: string[];
   socialMedia: string[];
 }
+export enum SocialMediaList {
+  'facebook',
+  'twitter',
+  'github',
+  'linkedIn',
+  'instagram',
+  'youtube',
+}
 
-const UserSchema: Schema = new Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-  lastName: {
-    type: String,
-    required: true,
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    lowercase: true,
-  },
-  bio: String,
-  createdDate: {
-    type: Date,
-    default: Date.now(),
-  },
-  posts: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'Article',
+const networkList = [
+  'facebook',
+  'twitter',
+  'github',
+  'linkedIn',
+  'instagram',
+  'youtube',
+];
+
+const UserSchema: Schema<IUser> = new Schema(
+  {
+    name: {
+      type: String,
+      required: true,
     },
-  ],
-  socialMedia: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'SocialMediaList',
+    lastName: {
+      type: String,
+      required: true,
     },
-  ],
-});
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+    },
+    bio: String,
+    posts: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Article',
+      },
+    ],
+    socialMedias: [
+      {
+        link: {
+          type: String,
+          required: true,
+        },
+        network: {
+          type: String,
+          enum: networkList,
+        },
+      },
+    ],
+  },
+  { timestamps: true, toJSON: { virtuals: true } }
+);
 
 UserSchema.plugin(uniqueValidator);
+
+UserSchema.virtual('fullName').get(function (this: IUser): string {
+  return `${this.name}  ${this.lastName}`;
+});
 
 export default model('User', UserSchema);
