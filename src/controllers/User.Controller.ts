@@ -1,13 +1,9 @@
 import { Request, Response } from 'express';
-import UserModel from '../models/User.Model';
-import SocialMediaModelUserRel from '../models/Relations/SocialMedia-User.relation';
-import SocialMediaListModel from '../models/Relations/SocialMediaList.Model';
+import UserModel, { SocialMediaList } from '../models/User.Model';
 interface ISocialMedia {
   link: string;
-  socialMedia: string;
+  socialMedia: SocialMediaList;
 }
-
-interface ISocialMediaList {}
 
 interface IUserRequestBody {
   name: string;
@@ -16,6 +12,24 @@ interface IUserRequestBody {
   email: string;
   socialMedias: ISocialMedia[];
 }
+
+export const getUsers = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  try {
+    const query = req.query;
+    const users = await UserModel.find(query);
+
+    return res.status(200).json({
+      users,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      error,
+    });
+  }
+};
 
 export const createUser = async (
   req: Request,
@@ -34,59 +48,13 @@ export const createUser = async (
     lastName,
     bio,
     email,
+    socialMedias,
   });
 
   try {
-    let user;
-    let socialMediaList;
-    const socialMediaIds: any = [];
-
-    try {
-      socialMediaList = Promise.all(
-        socialMedias.map(async (social: ISocialMedia) => {
-          const socialMediaLink = new SocialMediaListModel({
-            link: social.link,
-            socialMediaId: social.socialMedia,
-            userId: newUser._id,
-          });
-
-          try {
-            socialMediaIds.push(socialMediaLink._id);
-            await socialMediaLink.save();
-          } catch (error) {
-            console.log('relationship error', error);
-          }
-        })
-      );
-    } catch (error) {
-      return res.status(400).json({
-        error,
-      });
-    }
-    user = await newUser.save();
-    await user.update({ socialMedia: socialMediaIds });
+    const user = await newUser.save();
     return res.status(200).json({
       user,
-      testingRel: socialMediaList,
-    });
-  } catch (error) {
-    return res.status(400).json({
-      error,
-    });
-  }
-};
-
-export const getUsers = async (
-  req: Request,
-  res: Response
-): Promise<Response> => {
-  try {
-    const users = await UserModel.find();
-    const relationship = await SocialMediaModelUserRel.find();
-
-    return res.status(200).json({
-      users,
-      relationship,
     });
   } catch (error) {
     return res.status(400).json({
@@ -101,8 +69,57 @@ export const getOneUser = async (
 ): Promise<Response> => {
   try {
     const user = await UserModel.findOne({ _id: req.params.id }).populate(
-      'socialMedia'
+      'posts'
     );
+
+    return res.status(200).json({
+      success: true,
+      data: user,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const updateUser = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { name, lastName, bio, socialMedias } = req.body;
+
+  try {
+    const oldUser = await UserModel.findByIdAndUpdate(req.params.userId, {
+      name,
+      lastName,
+      bio,
+      socialMedias,
+    });
+
+    const newUser = await UserModel.findById(req.params.userId);
+
+    return res.status(200).json({
+      old: oldUser,
+      new: newUser,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      error,
+    });
+  }
+};
+
+export const deleteUser = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  try {
+    const user = await UserModel.findByIdAndDelete(req.params.userId);
+    if (!user) {
+      return res.status(400).json({ message: 'Item does not exist' });
+    }
 
     return res.status(200).json({
       user,
