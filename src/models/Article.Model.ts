@@ -2,33 +2,39 @@ import { model, Schema, Document } from 'mongoose';
 
 export interface IArticle extends Document {
   title: string;
-  createdDate: string;
   comments: string;
   content: string;
   author: string;
-  category: string;
+  categories: string[];
 }
 
-const ArticleSchema = new Schema({
-  title: String,
-  createdDate: Date,
-  content: String,
-  comments: [
-    {
+const categories = ['life', 'tech', 'cooking', 'general'];
+
+const ArticleSchema = new Schema(
+  {
+    title: String,
+    content: String,
+    comments: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Comment',
+      },
+    ],
+    author: {
       type: Schema.Types.ObjectId,
-      ref: 'Comment',
+      ref: 'User',
+      required: true,
     },
-  ],
-  author: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
+    categories: [
+      {
+        type: String,
+        enum: categories,
+        required: true,
+        default: ['general'],
+      },
+    ],
   },
-  category: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'Category',
-    },
-  ],
-});
+  { timestamps: true }
+);
 
 export default model<IArticle>('Article', ArticleSchema);
