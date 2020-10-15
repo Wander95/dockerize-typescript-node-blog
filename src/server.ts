@@ -7,8 +7,10 @@ import admin from 'firebase-admin';
 import serviceAccount from './serviceAccountKey.json';
 
 import UserRoutes from './routes/Users.Route';
-import SocialMediaRoutes from './routes/SocialMedia.Route';
 import ArticleRoutes from './routes/Article.Route';
+
+const PREFIX = `/api`;
+const V1 = `v1`;
 
 // * Making Ts happy again */
 const params = {
@@ -43,8 +45,7 @@ app.use(helmet());
 app.use(cors());
 
 // * Routes */
-app.use('/api', UserRoutes);
-app.use('/api', SocialMediaRoutes);
-app.use('/api', ArticleRoutes);
+app.use(`${PREFIX}/${V1}`, UserRoutes);
+app.use(`${PREFIX}/${V1}`, ArticleRoutes);
 
 export default app;
