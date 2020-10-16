@@ -2,40 +2,18 @@ import express, { Application, Router } from 'express';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import cors from 'cors';
-import admin from 'firebase-admin';
-
-import serviceAccount from './serviceAccountKey.json';
 
 import UserRoutes from './routes/Users.Route';
 import ArticleRoutes from './routes/Article.Route';
+import AuthRoutes from './routes/Auth.Route';
 
+// * Initializations * /
 const PREFIX = `/api`;
 const V1 = `v1`;
-
-// * Making Ts happy again */
-const params = {
-  type: serviceAccount.type,
-  projectId: serviceAccount.project_id,
-  privateKeyId: serviceAccount.private_key_id,
-  privateKey: serviceAccount.private_key,
-  clientEmail: serviceAccount.client_email,
-  clientId: serviceAccount.client_id,
-  authUri: serviceAccount.auth_uri,
-  tokenUri: serviceAccount.token_uri,
-  authProviderX509CertUrl: serviceAccount.auth_provider_x509_cert_url,
-  clientC509CertUrl: serviceAccount.client_x509_cert_url,
-};
-
 const app: Application = express();
 
 // * Configuration */
 app.set('port', 3000 || process.env.PORT);
-
-// * Firebase config */
-admin.initializeApp({
-  credential: admin.credential.cert(params),
-  databaseURL: 'https://crucial-subset-268515.firebaseio.com',
-});
 
 // * Middleware */
 app.use(express.json());
@@ -47,5 +25,6 @@ app.use(cors());
 // * Routes */
 app.use(`${PREFIX}/${V1}`, UserRoutes);
 app.use(`${PREFIX}/${V1}`, ArticleRoutes);
+app.use(`${PREFIX}/${V1}`, AuthRoutes);
 
 export default app;
