@@ -68,9 +68,7 @@ export const getOneUser = async (
   res: Response
 ): Promise<Response> => {
   try {
-    const user = await UserModel.findOne({ _id: req.params.id }).populate(
-      'posts'
-    );
+    const user = await UserModel.findOne({ uid: req.userId }).populate('posts');
 
     return res.status(200).json({
       success: true,
@@ -98,7 +96,7 @@ export const updateUser = async (
       socialMedias,
     });
 
-    const newUser = await UserModel.findById(req.params.userId);
+    const newUser = await UserModel.findOne({ uid: req.userId });
 
     return res.status(200).json({
       old: oldUser,
