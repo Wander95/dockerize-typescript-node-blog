@@ -7,6 +7,8 @@ import UserRoutes from './routes/Users.Route';
 import ArticleRoutes from './routes/Article.Route';
 import AuthRoutes from './routes/Auth.Route';
 
+import { isAuthorized } from './libs/authentication';
+
 // * Initializations * /
 const PREFIX = `/api`;
 const V1 = `v1`;
@@ -23,8 +25,8 @@ app.use(helmet());
 app.use(cors());
 
 // * Routes */
-app.use(`${PREFIX}/${V1}`, UserRoutes);
 app.use(`${PREFIX}/${V1}`, ArticleRoutes);
 app.use(`${PREFIX}/${V1}`, AuthRoutes);
+app.use(`${PREFIX}/${V1}`, isAuthorized, UserRoutes);
 
 export default app;
