@@ -2,20 +2,21 @@ import _admin from 'firebase-admin';
 import _firebase from 'firebase';
 import firebaseConfig from './firebaseCredentials';
 import firebase_env from './config/index';
+import serviceAccount from './serviceAccountKey.json';
 
 const { FIREBASE_ADMIN } = firebase_env;
 
 export const params = {
-  type: FIREBASE_ADMIN.TYPE,
-  projectId: FIREBASE_ADMIN.PROJECT_ID,
-  privateKeyId: FIREBASE_ADMIN.PRIVATE_KEY_ID,
-  privateKey: FIREBASE_ADMIN.PRIVATE_KEY,
-  clientEmail: FIREBASE_ADMIN.CLIENT_EMAIL,
-  clientId: FIREBASE_ADMIN.CLIENT_ID,
-  authUri: FIREBASE_ADMIN.AUTH_URI,
-  tokenUri: FIREBASE_ADMIN.TOKEN_URI,
-  authProviderX509CertUrl: FIREBASE_ADMIN.AUTH_PROVIDER_X509_CERT_URL,
-  clientC509CertUrl: FIREBASE_ADMIN.CLIENT_X509_CERT_URL,
+  type: serviceAccount.type,
+  projectId: serviceAccount.project_id,
+  privateKeyId: serviceAccount.private_key_id,
+  privateKey: serviceAccount.private_key,
+  clientEmail: serviceAccount.client_email,
+  clientId: serviceAccount.client_id,
+  authUri: serviceAccount.auth_uri,
+  tokenUri: serviceAccount.token_uri,
+  authProviderX509CertUrl: serviceAccount.auth_provider_x509_cert_url,
+  clientC509CertUrl: serviceAccount.client_x509_cert_url,
 };
 
 export const firebase = _firebase.initializeApp(firebaseConfig);
