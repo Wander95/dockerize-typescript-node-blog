@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { admin } from '../firebaseCon';
+import { firebase_admin } from '../firebaseConfig';
 import UserModel from '../models/User.Model';
 
 export const isAuthorized = async (
@@ -15,7 +15,7 @@ export const isAuthorized = async (
   }
 
   try {
-    const firebaseUser = await admin.auth().verifyIdToken(token);
+    const firebaseUser = await firebase_admin.auth().verifyIdToken(token);
     const mongoUser = await UserModel.findOne({ uid: firebaseUser.uid });
     req.userId = mongoUser?._id;
     next();

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { success } from '../libs/ResponseAPI';
-import { firebase } from '../firebaseCon';
+import { firebase } from '../firebaseConfig';
 import UserModel from '../models/User.Model';
 
 export const signIn = async (
