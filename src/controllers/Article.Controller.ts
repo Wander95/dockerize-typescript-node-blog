@@ -16,33 +16,29 @@ export const createArticle = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  const {
-    category,
-    comments,
-    content,
-    title,
-    userId,
-  }: IBlogRequestBody = req.body;
+  const { category, comments, content, title }: IBlogRequestBody = req.body;
 
   const newArticle = new ArticleModel({
     category,
     comments,
     content,
     title,
-    author: userId,
+    author: req.userId,
   });
 
   try {
+    const article = await newArticle.save();
+
     try {
-      await UserModel.update({ _id: userId }, { $push: { posts: newArticle } });
+      await UserModel.update(
+        { _id: req.userId },
+        { $push: { posts: newArticle } }
+      );
     } catch (error) {
       console.log('error', error);
     }
-
-    const article = await newArticle.save();
     return res.status(200).json(article);
   } catch (error) {
-    console.log('error', error);
     return res.status(400).json({
       error,
     });
@@ -74,11 +70,9 @@ export const getOneArticle = async (
   res: Response
 ): Promise<Response> => {
   try {
-    const article = await ArticleModel.findOne({ _id: req.params.id }).populate(
-      {
-        path: 'author',
-      }
-    );
+    const article = await ArticleModel.findOne({ uid: req.userId }).populate({
+      path: 'author',
+    });
 
     return res.status(200).json({
       article,
