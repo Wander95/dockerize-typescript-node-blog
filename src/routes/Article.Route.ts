@@ -14,7 +14,7 @@ import {
   getAllComments,
 } from '../controllers/Comment.Controller';
 
-import { isAuthorized } from '../libs/index';
+import { isAuthorized } from '../libs/authentication';
 
 import { Router } from 'express';
 
