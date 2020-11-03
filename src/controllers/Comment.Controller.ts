@@ -36,7 +36,7 @@ export const createComment = async (
   const newComment = new CommentModel({
     body,
     articleId,
-    userId,
+    userId: req.userId,
   });
 
   await ArticleModel.update(
