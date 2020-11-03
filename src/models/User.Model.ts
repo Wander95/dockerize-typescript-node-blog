@@ -30,6 +30,10 @@ const networkList = [
 
 const UserSchema: Schema<IUser> = new Schema(
   {
+    uid: {
+      type: String,
+      required: true,
+    },
     name: {
       type: String,
       required: true,
