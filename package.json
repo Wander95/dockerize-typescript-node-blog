@@ -10,6 +10,7 @@
     "watch:debug": "nodemon --inspect=5858 -e ts,tsx --exec node -r ts-node/register ./src/index.ts",
     "dev": "concurrently \"tsc --watch\" \"nodemon --inspect=9229 dist/index.js\" ",
     "test": "jest",
+    "test:watch": "jest --watch",
     "tslint": "tslint --project tsconfig.json"
   },
   "keywords": [],
